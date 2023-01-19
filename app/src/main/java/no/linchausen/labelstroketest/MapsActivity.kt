@@ -3,11 +3,14 @@ package no.linchausen.labelstroketest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.*
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import de.p72b.maps.animation.AnimatedPolyline
 import no.linchausen.labelstroketest.databinding.ActivityMapsBinding
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -55,9 +58,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Add a marker in Sydney and move the camera
         val sydney = LatLng(59.909480, 10.638224)
+        val points = mutableListOf<LatLng>()
+        for (i in 0..1) {
+            points.add(LatLng(sydney.latitude + (0.01 + i), sydney.longitude + (0.01 + i)))
+        }
+        Log.d(
+            TAG,
+            "$points"
+        )
+
         mMap.setMapStyle(
             MapStyleOptions.loadRawResourceStyle(this, R.raw.maps_style_night)
         )
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 8f))
+
+        val polyline = AnimatedPolyline(
+            mMap,
+            points,
+            PolylineOptions()
+                .clickable(false)
+                .color(ContextCompat.getColor(this, R.color.white))
+                .width(10f),
+            duration = 10000
+        )
+        polyline.start()
     }
 }
